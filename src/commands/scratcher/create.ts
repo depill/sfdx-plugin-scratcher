@@ -84,7 +84,7 @@ export default class Create extends SfdxCommand {
             const installCommand = `sfdx force:package:install --package ${packageId} -w 60 -r`;
             const installResult = await exec(installCommand, { maxBuffer: 1000000 * 1024 });
             if (installResult.stderr) {
-                this.ux.error(`Error on installing packages "${packagesToInstall}"`)
+                this.ux.error(`Error on installing packages "${packageName}"`)
                 this.ux.error(installResult.stderr);
                 return;
             }
