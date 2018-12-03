@@ -41,7 +41,6 @@ USAGE
   $ sfdx-plugin-scratcher scratcher:create
 
 OPTIONS
-  -u, --targetusername=targetusername              username or alias for the target org; overrides default target org
   -v, --targetdevhubusername=targetdevhubusername  username or alias for the dev hub org; overrides default dev hub org
   --apiversion=apiversion                          override the api version used for api requests made by this command
   --json                                           format output as json
