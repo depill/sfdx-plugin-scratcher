@@ -1,0 +1,7 @@
+{
+    "commandDescription": "Create a scratch org, install deps & pushes code",
+    "nameFlagDescription": "name to print",
+    "forceFlagDescription": "example boolean flag",
+    "errorNoOrgResults": "No results found for the organization '%s'."
+  }
+  
