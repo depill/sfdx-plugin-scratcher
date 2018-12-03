@@ -22,7 +22,7 @@ $ npm install -g sfdx-plugin-scratcher
 $ sfdx-plugin-scratcher COMMAND
 running command...
 $ sfdx-plugin-scratcher (-v|--version|version)
-sfdx-plugin-scratcher/0.0.1 win32-x64 node-v10.8.0
+sfdx-plugin-scratcher/0.0.1 win32-x64 node-v8.9.4
 $ sfdx-plugin-scratcher --help [COMMAND]
 USAGE
   $ sfdx-plugin-scratcher COMMAND

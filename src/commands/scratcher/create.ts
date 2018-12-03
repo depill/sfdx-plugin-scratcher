@@ -16,7 +16,7 @@ export default class Create extends SfdxCommand {
     public static description = messages.getMessage('commandDescription');
 
     // Comment this out if your command does not require an org username
-    protected static requiresUsername = true;
+    protected static requiresUsername = false;
 
     // Comment this out if your command does not support a hub org username
     protected static supportsDevhubUsername = true;
