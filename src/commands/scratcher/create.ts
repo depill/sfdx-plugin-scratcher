@@ -52,8 +52,6 @@ export default class Create extends SfdxCommand {
 
         const packageDirectories: any[] = projectJson['packageDirectories'];
         
-        
-        this.ux.log(packageDirectories.length);
         if(packageDirectories != undefined && packageDirectories.length > 0) {
             for (const packageConfig of packageDirectories) {
                 // If this is the default package directory we resolve for dependencies
