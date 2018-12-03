@@ -53,12 +53,14 @@ export default class Create extends SfdxCommand {
         const packageDirectories: any[] = projectJson['packageDirectories'];
         
         
-        if(packageDirectories.length > 0) {
+        this.ux.log(packageDirectories.length);
+        if(packageDirectories != undefined && packageDirectories.length > 0) {
             for (const packageConfig of packageDirectories) {
-                // If this is the default package directory we resolve for dependancies
+                // If this is the default package directory we resolve for dependencies
                 if(packageConfig.default) {
                     definitionFile = packageConfig.definitionFile;
-                    if(packageConfig.dependancies != null && packageConfig.dependancies.length > 0) {
+
+                    if(packageConfig.dependencies != undefined && packageConfig.dependencies.length > 0) {
                         for (const dependancy of packageConfig.dependencies) {
                             packagesToInstall[dependancy.package] = projectJson['packageAliases'][dependancy.package];
                         }
@@ -66,8 +68,7 @@ export default class Create extends SfdxCommand {
                 }
             }
         }
-
-        this.ux.startSpinner('Starting to create the SFDX org');
+        this.ux.startSpinner('Starting to create the SFDX org ');
         const createScratchOrgCommand = `sfdx force:org:create -f ${definitionFile} -w 60 -s -d 14`;
         const createScratchOrgResult = await exec(createScratchOrgCommand, { maxBuffer: 1000000 * 1024 });
         //this.ux.log(createScratchOrgResult.stdout);
@@ -79,21 +80,19 @@ export default class Create extends SfdxCommand {
         }
         this.ux.stopSpinner('Finished creating the SFDX org');
 
-        if(Object.keys(packagesToInstall).length > 0) {
-            await this.asyncForEach(Object.keys(packagesToInstall), async (packageName) => {
-                const packageId = packagesToInstall[packageName];
-                this.ux.startSpinner(`Installing package ${packageName}`);
-                const installCommand = `sfdx force:package:install --package ${packageId} -w 60 -r`;
-                const installResult = await exec(installCommand, { maxBuffer: 1000000 * 1024 });
-                if (installResult.stderr) {
-                    this.ux.error(`Error on installing packages "${packagesToInstall}"`)
-                    this.ux.error(installResult.stderr);
-                    return;
-                }
-                this.ux.stopSpinner(`Finshed installing package ${packageName}`);
+        await this.asyncForEach(Object.keys(packagesToInstall), async (packageName) => {
+            const packageId = packagesToInstall[packageName];
+            this.ux.startSpinner(`Installing package ${packageName}`);
+            const installCommand = `sfdx force:package:install --package ${packageId} -w 60 -r`;
+            const installResult = await exec(installCommand, { maxBuffer: 1000000 * 1024 });
+            if (installResult.stderr) {
+                this.ux.error(`Error on installing packages "${packagesToInstall}"`)
+                this.ux.error(installResult.stderr);
+                return;
+            }
+            this.ux.stopSpinner(`Finshed installing package ${packageName}`);
 
-            });
-        }
+        });
         this.ux.startSpinner('Push source code');
         const pushCommand = `sfdx force:source:push`;
         const pushResult = await exec(pushCommand, { maxBuffer: 1000000 * 1024 });
