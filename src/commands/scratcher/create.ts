@@ -74,6 +74,7 @@ export default class Create extends SfdxCommand {
 
         if (createScratchOrgResult.stderr) {
             this.ux.error(createScratchOrgResult.stderr);
+            this.ux.error(createScratchOrgResult.stdout);
             return;
         }
         this.ux.stopSpinner('Finished creating the SFDX org');
@@ -86,6 +87,8 @@ export default class Create extends SfdxCommand {
             if (installResult.stderr) {
                 this.ux.error(`Error on installing packages "${packageName}"`)
                 this.ux.error(installResult.stderr);
+                this.ux.error(installResult.stdout);
+
                 return;
             }
             this.ux.stopSpinner(`Finshed installing package ${packageName}`);
@@ -96,6 +99,8 @@ export default class Create extends SfdxCommand {
         const pushResult = await exec(pushCommand, { maxBuffer: 1000000 * 1024 });
         if (pushResult.stderr) {
             this.ux.error(pushResult.stderr);
+            this.ux.error(pushResult.stdout);
+
             return;
         }
         this.ux.stopSpinner('Finished pushing source code');
@@ -107,6 +112,7 @@ export default class Create extends SfdxCommand {
         const permSetResult = await exec(permSetCommand, { maxBuffer: 1000000 * 1024 });
         if (permSetResult.stderr) {
             this.ux.error(permSetResult.stderr);
+            this.ux.error(permSetResult.stdout);
             // This can fail without failing the whole programs return; 
         }
         this.ux.stopSpinner('Finished assigining Admin Permission Set to the running user');
