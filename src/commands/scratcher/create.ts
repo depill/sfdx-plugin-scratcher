@@ -1,4 +1,4 @@
-import {core, SfdxCommand} from '@salesforce/command';
+import {core, flags, SfdxCommand} from '@salesforce/command';
 import {AnyJson} from '@salesforce/ts-types';
 import * as child from 'child_process';
 import * as util from 'util';
@@ -23,6 +23,12 @@ export default class Create extends SfdxCommand {
 
     // Set this to true if your command requires a project workspace; 'requiresProject' is false by default
     protected static requiresProject = true;
+
+    protected static flagsConfig = {
+        // flag with a value (-d, --days=VALUE)
+        days: flags.string({char: 'd', description: 'Days for the sandbox to live', default: '14'}),
+      };
+
 
     public static examples = [
         `$ sfdx scratcher:create
@@ -67,7 +73,7 @@ export default class Create extends SfdxCommand {
             }
         }
         this.ux.startSpinner('Starting to create the SFDX org ');
-        const createScratchOrgCommand = `sfdx force:org:create -f ${definitionFile} -w 60 -s -d 14`;
+        const createScratchOrgCommand = `sfdx force:org:create -f ${definitionFile} -w 60 -s -d ${this.flags.days}`;
         const createScratchOrgResult = await exec(createScratchOrgCommand, { maxBuffer: 1000000 * 1024 });
         //this.ux.log(createScratchOrgResult.stdout);
         //this.ux.log(createScratchOrgResult.stderr);
