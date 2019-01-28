@@ -22,7 +22,7 @@ $ npm install -g sfdx-plugin-scratcher
 $ sfdx-plugin-scratcher COMMAND
 running command...
 $ sfdx-plugin-scratcher (-v|--version|version)
-sfdx-plugin-scratcher/0.0.1 win32-x64 node-v8.9.4
+sfdx-plugin-scratcher/0.0.1 darwin-x64 node-v8.9.4
 $ sfdx-plugin-scratcher --help [COMMAND]
 USAGE
   $ sfdx-plugin-scratcher COMMAND
@@ -41,6 +41,7 @@ USAGE
   $ sfdx-plugin-scratcher scratcher:create
 
 OPTIONS
+  -d, --days=days                                  [default: 14] Days for the sandbox to live
   -v, --targetdevhubusername=targetdevhubusername  username or alias for the dev hub org; overrides default dev hub org
   --apiversion=apiversion                          override the api version used for api requests made by this command
   --json                                           format output as json
@@ -52,7 +53,7 @@ EXAMPLE
   permssion of the app
 ```
 
-_See code: [src\commands\scratcher\create.ts](https://github.com/depill/sfdx-plugin-scratcher/blob/v0.0.1/src\commands\scratcher\create.ts)_
+_See code: [src/commands/scratcher/create.ts](https://github.com/depill/sfdx-plugin-scratcher/blob/v0.0.1/src/commands/scratcher/create.ts)_
 <!-- commandsstop -->
 <!-- debugging-your-plugin -->
 # Debugging your plugin

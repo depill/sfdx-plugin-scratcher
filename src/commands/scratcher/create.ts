@@ -1,8 +1,12 @@
 import {core, flags, SfdxCommand} from '@salesforce/command';
 import {AnyJson} from '@salesforce/ts-types';
 import * as child from 'child_process';
+
 import * as util from 'util';
 const exec = util.promisify(child.exec);
+//const { spawn } = require('child_process');
+//import spawn from 'child_process';
+
 
 
 // Initialize Messages with the current plugin directory
@@ -11,8 +15,45 @@ core.Messages.importMessagesDirectory(__dirname);
 // Load the specific messages for this file. Messages from @salesforce/command, @salesforce/core,
 // or any library that is using the messages framework can also be loaded this way.
 const messages = core.Messages.loadMessages('sfdx-plugin-scratcher', 'scratcher-create');
+declare module SFDXJSONMessage {
+
+    export interface Result {
+        columnNumber?: string;
+        lineNumber?: string;
+        error?: string;
+        fullName?: string;
+        type?: string;
+        filePath?: string;
+    }
+
+    export interface Success {
+        state?: string;
+        fullName?: string;
+        type?: string;
+        filePath?: string;
+    }
+
+    export interface RootObject {
+        message?: string;
+        status: number;
+        stack?: string;
+        name?: string;
+        result?: Result[];
+        warnings?: any[];
+        partialSuccess?: Success[];
+        success?: Success[];
+
+    }
+    
+    interface CreateResultI {
+        stdout: string;
+        stderr: string;
+      }
+}
 
 export default class Create extends SfdxCommand {
+
+
     public static description = messages.getMessage('commandDescription');
 
     // Comment this out if your command does not require an org username
@@ -41,13 +82,24 @@ export default class Create extends SfdxCommand {
           await callback(array[index], index, array);
         }
     }
+    
+    public parseResultTrueIfError (input: SFDXJSONMessage.CreateResultI) {
+        let jsonResult: SFDXJSONMessage.RootObject  = JSON.parse(input.stdout);
+        if (jsonResult.status > 0) {
+            this.ux.logJson(jsonResult);
+            return true;
+        }
+        return false;
+    }
+
+
 
     public async run(): Promise<AnyJson> {
         //const project = await this.project.resolve();
         interface IPackageInstall {
             [key: string]: string;
          } 
-
+        
 
         const projectJson = await this.project.resolveProjectConfig();
         let packagesToInstall:IPackageInstall = {};
@@ -55,7 +107,6 @@ export default class Create extends SfdxCommand {
         const scratcherFolder = projectJson['plugins']['scratcher'];
         const scratcherPrefix = scratcherFolder['prefix'];
         const scratchNamespace = scratcherFolder['namespace'];
-
         const packageDirectories: any[] = projectJson['packageDirectories'];
         
         if(packageDirectories != undefined && packageDirectories.length > 0) {
@@ -72,57 +123,44 @@ export default class Create extends SfdxCommand {
                 }
             }
         }
-        this.ux.startSpinner('Starting to create the SFDX org ');
-        const createScratchOrgCommand = `sfdx force:org:create -f ${definitionFile} -w 60 -s -d ${this.flags.days}`;
-        const createScratchOrgResult = await exec(createScratchOrgCommand, { maxBuffer: 1000000 * 1024 });
-        //this.ux.log(createScratchOrgResult.stdout);
-        //this.ux.log(createScratchOrgResult.stderr);
-
-        if (createScratchOrgResult.stderr) {
-            this.ux.error(createScratchOrgResult.stderr);
-            this.ux.error(createScratchOrgResult.stdout);
-            return;
-        }
-        this.ux.stopSpinner('Finished creating the SFDX org');
+        console.log('Starting to create the SFDX org ');
+        const createScratchOrgCommand = `sfdx force:org:create -f ${definitionFile} -w 60 -s -d ${this.flags.days} --json | jq .`;
+        const createScratchOrgResult = await exec(createScratchOrgCommand, { maxBuffer: 20000 * 1024 });
+        if(this.parseResultTrueIfError(createScratchOrgResult))
+            return; 
+        console.log('Finished creating the SFDX org');
 
         await this.asyncForEach(Object.keys(packagesToInstall), async (packageName) => {
             const packageId = packagesToInstall[packageName];
-            this.ux.startSpinner(`Installing package ${packageName}`);
-            const installCommand = `sfdx force:package:install --package ${packageId} -w 60 -r`;
-            const installResult = await exec(installCommand, { maxBuffer: 1000000 * 1024 });
-            if (installResult.stderr) {
-                this.ux.error(`Error on installing packages "${packageName}"`)
-                this.ux.error(installResult.stderr);
-                this.ux.error(installResult.stdout);
-
-                return;
-            }
-            this.ux.stopSpinner(`Finshed installing package ${packageName}`);
+            console.log(`Installing package ${packageName}`);
+            const installCommand = `sfdx force:package:install --package ${packageId} -w 60 -r --json | jq .`;
+            const installResult = await exec(installCommand, { maxBuffer: 20000 * 1024 });
+            if(this.parseResultTrueIfError(installResult))
+                return; 
+                
+            console.log(`Finshed installing package ${packageName}`);
 
         });
-        this.ux.startSpinner('Push source code');
-        const pushCommand = `sfdx force:source:push`;
-        const pushResult = await exec(pushCommand, { maxBuffer: 1000000 * 1024 });
-        if (pushResult.stderr) {
-            this.ux.error(pushResult.stderr);
-            this.ux.error(pushResult.stdout);
+        
+       
+        console.log('Push source code');
+        const pushCommand = `sfdx force:source:push --json | jq .`;
+        const pushResult = <SFDXJSONMessage.CreateResultI> await exec(pushCommand);
+        if(this.parseResultTrueIfError(pushResult))
+            return; 
 
-            return;
-        }
-        this.ux.stopSpinner('Finished pushing source code');
+        console.log('Stopped pushing code');
 
-        this.ux.startSpinner('Assigining Admin Permission Set to the running user');
+        console.log('Assigining Admin Permission Set to the running user');
         
         // TODO: Resolve for dependant permission sets to assign them as well.
-        const permSetCommand = `sfdx force:user:permset:assign -n ${scratcherPrefix}_${scratchNamespace}_Admin_User`;
-        const permSetResult = await exec(permSetCommand, { maxBuffer: 1000000 * 1024 });
-        if (permSetResult.stderr) {
-            this.ux.error(permSetResult.stderr);
-            this.ux.error(permSetResult.stdout);
-            // This can fail without failing the whole programs return; 
-        }
-        this.ux.stopSpinner('Finished assigining Admin Permission Set to the running user');
+        const permSetCommand = `sfdx force:user:permset:assign -n ${scratcherPrefix}_${scratchNamespace}_Admin_User --json | jq .`;
+        const permSetResult = await exec(permSetCommand, { maxBuffer: 20000 * 1024 });
+        if(this.parseResultTrueIfError(permSetResult))
+            return; 
 
+        console.log('Finished assigining Admin Permission Set to the running user');
+        
         return null;
     }
 }
