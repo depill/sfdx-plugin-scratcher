@@ -125,7 +125,7 @@ export default class Create extends SfdxCommand {
         }
         console.log('Starting to create the SFDX org ');
         const createScratchOrgCommand = `sfdx force:org:create -f ${definitionFile} -w 60 -s -d ${this.flags.days} --json | jq .`;
-        const createScratchOrgResult = await exec(createScratchOrgCommand, { maxBuffer: 20000 * 1024 });
+        const createScratchOrgResult = await exec(createScratchOrgCommand, { maxBuffer: 100000 * 1024 });
         if(this.parseResultTrueIfError(createScratchOrgResult))
             return; 
         console.log('Finished creating the SFDX org');
@@ -134,7 +134,7 @@ export default class Create extends SfdxCommand {
             const packageId = packagesToInstall[packageName];
             console.log(`Installing package ${packageName}`);
             const installCommand = `sfdx force:package:install --package ${packageId} -w 60 -r --json | jq .`;
-            const installResult = await exec(installCommand, { maxBuffer: 20000 * 1024 });
+            const installResult = await exec(installCommand, { maxBuffer: 100000 * 1024 });
             if(this.parseResultTrueIfError(installResult))
                 return; 
                 
@@ -145,7 +145,7 @@ export default class Create extends SfdxCommand {
        
         console.log('Push source code');
         const pushCommand = `sfdx force:source:push --json | jq .`;
-        const pushResult = <SFDXJSONMessage.CreateResultI> await exec(pushCommand);
+        const pushResult = <SFDXJSONMessage.CreateResultI> await exec(pushCommand, { maxBuffer: 100000 * 1024 });
         if(this.parseResultTrueIfError(pushResult))
             return; 
 
@@ -155,7 +155,7 @@ export default class Create extends SfdxCommand {
         
         // TODO: Resolve for dependant permission sets to assign them as well.
         const permSetCommand = `sfdx force:user:permset:assign -n ${scratcherPrefix}_${scratchNamespace}_Admin_User --json | jq .`;
-        const permSetResult = await exec(permSetCommand, { maxBuffer: 20000 * 1024 });
+        const permSetResult = await exec(permSetCommand, { maxBuffer: 100000 * 1024 });
         if(this.parseResultTrueIfError(permSetResult))
             return; 
 
