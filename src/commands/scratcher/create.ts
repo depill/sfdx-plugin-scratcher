@@ -132,6 +132,7 @@ export default class Create extends SfdxCommand {
                 }
             }
         }
+        
         console.log('Starting to create the SFDX org ');
         const createScratchOrgCommand = `sfdx force:org:create -f ${definitionFile} -w 60 -s -d ${this.flags.days} --json | jq .`;
         const createScratchOrgResult = await exec(createScratchOrgCommand, options);

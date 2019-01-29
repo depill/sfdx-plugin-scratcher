@@ -30,7 +30,45 @@ USAGE
 ```
 <!-- usagestop -->
 <!-- commands -->
+* [`sfdx-plugin-scratcher scratcher:bump`](#sfdx-plugin-scratcher-scratcherbump)
 * [`sfdx-plugin-scratcher scratcher:create`](#sfdx-plugin-scratcher-scratchercreate)
+
+## `sfdx-plugin-scratcher scratcher:bump`
+
+bump the major/minor version number in the packageDirectory
+
+```
+USAGE
+  $ sfdx-plugin-scratcher scratcher:bump
+
+OPTIONS
+  -M, --major                                      Bump the major version by 1, sets minor,build to 0
+  -m, --minor                                      Bump the minor version by 1
+  -p, --patch                                      Bump the patch version by 1
+
+  -t, --target=target                              [default: force-app] name of your package directory (defaults to
+                                                   force-app)
+
+  -v, --targetdevhubusername=targetdevhubusername  username or alias for the dev hub org; overrides default dev hub org
+
+  --apiversion=apiversion                          override the api version used for api requests made by this command
+
+  --json                                           format output as json
+
+  --loglevel=(trace|debug|info|warn|error|fatal)   logging level for this command invocation
+
+EXAMPLES
+  sfdx scratcher:bump -m
+  // bump the minor version up by one (and set patch to 0)
+
+  sfdx scratcher:bump -M
+  // bump the major version up by one (and set minor/patch to 0)
+
+  sfdx scratcher:bump -p
+  // bump the patch version up by one
+```
+
+_See code: [src/commands/scratcher/bump.ts](https://github.com/depill/sfdx-plugin-scratcher/blob/v0.0.1/src/commands/scratcher/bump.ts)_
 
 ## `sfdx-plugin-scratcher scratcher:create`
 
