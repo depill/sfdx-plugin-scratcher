@@ -42,20 +42,16 @@ USAGE
   $ sfdx-plugin-scratcher scratcher:bump
 
 OPTIONS
-  -M, --major                                      Bump the major version by 1, sets minor,build to 0
-  -m, --minor                                      Bump the minor version by 1
-  -p, --patch                                      Bump the patch version by 1
+  -M, --major                                     Bump the major version by 1, sets minor,build to 0
+  -m, --minor                                     Bump the minor version by 1
+  -p, --patch                                     Bump the patch version by 1
 
-  -t, --target=target                              [default: force-app] name of your package directory (defaults to
-                                                   force-app)
+  -t, --target=target                             [default: force-app] name of your package directory (defaults to
+                                                  force-app)
 
-  -v, --targetdevhubusername=targetdevhubusername  username or alias for the dev hub org; overrides default dev hub org
+  --json                                          format output as json
 
-  --apiversion=apiversion                          override the api version used for api requests made by this command
-
-  --json                                           format output as json
-
-  --loglevel=(trace|debug|info|warn|error|fatal)   logging level for this command invocation
+  --loglevel=(trace|debug|info|warn|error|fatal)  logging level for this command invocation
 
 EXAMPLES
   sfdx scratcher:bump -m
