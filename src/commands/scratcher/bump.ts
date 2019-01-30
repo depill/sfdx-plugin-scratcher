@@ -29,7 +29,7 @@ export default class Bump extends SfdxCommand {
 
   // Set this to true if your command requires a project workspace; 'requiresProject' is false by default
   protected static requiresProject = true;
-  protected static requiresDevhubUsername = true;
+  protected static requiresDevhubUsername = false;
 
   public async run(): Promise<any> { // tslint:disable-line:no-any
     const projectFile = await this.project.retrieveSfdxProjectJson(false);
