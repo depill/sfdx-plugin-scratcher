@@ -36,6 +36,7 @@ declare module SFDXJSONMessage {
     export interface RootObject {
         message?: string;
         status: number;
+        exitCode?: number;
         stack?: string;
         name?: string;
         result?: Result[];
@@ -85,7 +86,7 @@ export default class Create extends SfdxCommand {
     
     public parseResultTrueIfError (input: SFDXJSONMessage.CreateResultI) {
         let jsonResult: SFDXJSONMessage.RootObject = JSON.parse(input.stdout);
-        if (jsonResult.status > 0) {
+        if (jsonResult.exitCode > 1 || (jsonResult.status > 0 && !jsonResult.exitCode)) {
             console.error(jsonResult);
             return true;
         }
