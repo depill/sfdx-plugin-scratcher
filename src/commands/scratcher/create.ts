@@ -105,7 +105,10 @@ export default class Create extends SfdxCommand {
             env: {  
                     "SFDX_JSON_TO_STDOUT": "true",
                     PATH: process.env.PATH,
-                    HOME: process.env.HOME
+                    HOME: process.env.HOME,
+                    PROXY: process.env.PROXY,
+                    HTTP_PROXY: process.env.HTTP_PROXY,
+                    HTTPS_PROXY: process.env.HTTPS_PROXY
             },
             maxBuffer: 100000 * 1024
         }
